@@ -14,7 +14,8 @@ predict how interesting or relevant the question is to people. Ideally, we'd lik
 as soon as a few people have viewed it, by measuring the people following the question as a proxy of interest. Can you 
 tell what questions will get the most followers?
 
-For this task, given Quora question text and topic data for questions with 0 visible answers, predict the ratio of viewers to followers.
+For this task, given Quora question text and topic data for questions with 0 visible answers, predict the ratio of 
+viewers to followers.
 
 
 QUORA ML PROBLEM: VIEWS
@@ -22,4 +23,5 @@ Not all of the questions on Quora are as interesting or appealing to people on t
 can organically attract the most viewers? What about questions that eventually become viral? Which questions are 
 timeless and can sustain traffic?
 
-For this task, given Quora question text, topic data, number of answers and number of people promoted to, predict the number of views per day in age of the question.
+For this task, given Quora question text, topic data, number of answers and number of people promoted to, predict the 
+number of views per day in age of the question.
