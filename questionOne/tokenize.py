@@ -16,8 +16,9 @@ train = pd.read_csv('questionone.csv')
 features = [] # make new empty list
 for row in range(train.shape[0]): # for every row in the data
     # data we need to create features
-    question_tokens = nltk.word_tokenize(train.ix[1,0]) # all tokens (words, punc, etc)
-    question_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech
+# PANDAS USAGE
+    question_tokens = nltk.word_tokenize(train.ix[row,0]) # all tokens (words, punc, etc)
+    question_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
     question_first_word_tag = question_tags[0]    
     question_nouns = []
     question_verbs = []
@@ -26,17 +27,34 @@ for row in range(train.shape[0]): # for every row in the data
             question_nouns.append(tag[0]) # all noun types 
         if tag[1][0] == "V":
             question_nouns.append(tag[0]) # all verb types 
+# PANDAS USAGE
+    context_topic_tokens = nltk.word_tokenize(train.ix[row,2]) # all tokens (words, punc, etc)
+    context_topic_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
+    context_topic_nouns = []
+    for tag in context_topic_tags: #separate parts of speech
+        if tag[1][0] == "N":
+            context_topic_nouns.append(tag[0]) # all noun types 
+        if tag[1][0] == "V":
+            context_topic_nouns.append(tag[0]) # all verb types 
+    # find number of nouns common between context_topic and question
+    num_ctnoun_match_qnoun = 0    
+    for ctnoun in context_topic_nouns:
+        for qnoun in question_nous:
+            if ctnoun = qnoun:
+                num_ctnoun_match_qnoun += 1
+
 
 # create features 
     features.append([]) # append a list to features for each row in data
+# PANDAS USAGE
     features[row].append(train.ix[row,1])# # of followers in context topic
     features[row].append(len(question_tokens))# # of words in the question
     features[row].append()# # of topics
 # PANDAS USAGE
-    features[row].append(train.ix[1][5])# sum of followers in topics
-    features[row].append()# not anon
-    features[row].append()# # of common nouns between question text and context topic
-    features[row].append()# # of common nouns between question text and topics
+    features[row].append()# sum of followers in topics
+# PANDAS USAGE
+    features[row].append(1 if train.ix[1][5] else 0)# 1 for anon 0 for non-anon
+    features[row].append(num_ctnoun_match_qnoun)# # of common nouns between question text and topics
     features[row].append()# Is it a yes or no question? (Is..will..can..do..does..are..)
     features[row].append()# What kind of question is it? (Who? What? Where? When? Why? How?)
     features[row].append()# no additional topics
