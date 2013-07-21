@@ -25,7 +25,10 @@ for row in train:
     question_verbs = {}
     question_words = {}
     question_adjectives = {}
+    hasPNoun = False
     for tag in question_tags: #separate parts of speech
+        if tag[1] == "NNP" or tag[1] == "NNPS":
+            hasPNoun = True
         if tag[1][0] == "N":
             question_nouns[tag[0]] = tag[0] # all noun types
         elif tag[1][0] == "V":
@@ -35,12 +38,11 @@ for row in train:
         elif tag[1][0] == "J":
             question_adjectives[tag[0]] = tag[0] # all adjectives
     # itquestion_first_word_tagems needed to test questions
-# PANDAS USAGE
     context_topic_tokens = nltk.word_tokenize(train[:, 2]) # all tokens (words, punc, etc)
     context_topic_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
     context_topic_nouns = {}
     context_topic_words = {}
-    for tag in context_topic_tags: #separate parts of speech
+    for tag in context_topic_tags:  #separate parts of speech
         if tag[1][0] == "N":
             context_topic_nouns.has_key(tag[0])# all noun types
         elif tag[1] != ".":
@@ -68,10 +70,6 @@ for row in train:
 #                question_correct_capitalization += 1
 
 # check if question contains a proper noun
-    hasPNoun = False
-    for tag in question_tags:
-        if tag[1] == "NNP" or tag[1] == "NNPS":
-            hasPNoun = True
 
 # create features
     features.append([]) # append a list to features for each row in data
