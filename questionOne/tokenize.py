@@ -21,43 +21,41 @@ for row in range(train.shape[0]): # for every row in the data
 # PANDAS USAGE
     question_tokens = nltk.word_tokenize(train.ix[row,0]) # all tokens (words, punc, etc)
     question_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists  
-    question_nouns = []
-    question_verbs = []
-    question_words = []
-    question_adjectives = []
+    question_nouns = {}
+    question_verbs = {}
+    question_words = {}
+    question_adjectives = {}
     for tag in question_tags: #separate parts of speech
         if tag[1][0] == "N":
-            question_nouns.append(tag[0]) # all noun types 
+            question_nouns[tag[0]] == tag[0] # all noun types 
         elif tag[1][0] == "V":
-            question_nouns.append(tag[0]) # all verb types 
+            question_verbs[tag[0]] == tag[0] # all verb types 
         elif tag[1] != ".":
-            question_words.append(tag[0]) # all non punctuations types 
+            question_words[tag[0]] == tag[0] # all non punctuations types 
         elif tag[1][0] == "J":
-            question_adjectives.append(tag[0]) # all adjectives
+            question_adjectives[tag[0]] == tag[0] # all adjectives
     # itquestion_first_word_tagems needed to test questions
 # PANDAS USAGE
     context_topic_tokens = nltk.word_tokenize(train.ix[row,2]) # all tokens (words, punc, etc)
     context_topic_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
-    context_topic_nouns = []
-    context_topic_words = []
+    context_topic_nouns = {}
+    context_topic_words = {}
     for tag in context_topic_tags: #separate parts of speech
         if tag[1][0] == "N":
-            context_topic_nouns.append(tag[0]) # all noun types 
+            context_topic_nouns[tag[0]] == tag[0]# all noun types 
         elif tag[1] != ".":
-            context_topic_words.append(tag[0]) # all non punctuations types 
+            context_topic_words[tag[0]] == tag[0] # all non punctuations types 
 
     # find number of nouns common between context_topic and question
     num_ctnoun_match_qnoun = 0    
     for ctnoun in context_topic_nouns:
-        for qnoun in question_nouns:
-            if ctnoun == qnoun:
+            if question_nouns[ctnoun]:
                 num_ctnoun_match_qnoun += 1
                 
     # find number of words common between context_topic and question
     num_ctwords_match_qwords = 0    
     for ctword in context_topic_words:
-        for qword in question_words:
-            if ctword == qword:
+            if question_words[ctword]:
                 num_ctwords_match_qwords += 1
                 
     # does first word match (Is..will..can..do..does..are..)
