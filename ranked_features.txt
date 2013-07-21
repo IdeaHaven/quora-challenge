@@ -1,0 +1,43 @@
+Ranked features (1st draft):
+
+higher the # of followers in context topic
+golden ratio # of words in the question. 50 > count > 10
+higher # of topics
+sum of followers in topics
+not anon
+# of common nouns between question text and context topic
+# of common nouns between question text and topics
+Is it a yes or no question? (Is..will..can..do..does..are..)
+What kind of question is it? (Who? What? Where? When? Why? How?)
+no additional topics
+question text count > 50
+# of sentences
+ends with a question mark
+freq of punctuation
+ratio of extraneous pronouns
+ratio of verbs
+ratio of adjectives
+What is the average length of word?
+if words are capitalized after a period
+Does the question have a proper noun in it?
+Does the question have a name in it?
+Does the question have a name of someone famous in it? (list of celebrities)
+Is the question related to technology?
+Does the question contain the name of a poppin' startup?
+Is the question related to science / mathematics?
+Is the question related to pop culture?
+Is the question related to sex / sexuality?
+Is the question related to love / romance?
+Is the question related to drugs?
+Is the question related to money?
+Does the question contain the word "best"?
+Does the question contain the word "worst"?
+Does the question contain the phrase "the most"
+Does the question contain the phrase "the least"
+Does the question contain a typo?
+# of misspellings
+Does the question address the reader directly?
+Is the question a hypothetical / conditional question? (If ....would?)
+Does the question contain words that do not exist in a colloquial english dictionary?
+How many of the most commonly occurring words in the dataset (excluding articles and prepositions) does the question contain?
+
