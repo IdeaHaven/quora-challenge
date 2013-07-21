@@ -15,7 +15,6 @@ train = pd.read_csv('questionone.csv')
 
 features = [] # make new empty list
 for row in range(train.shape[0]): # for every row in the data
-    print row
     # data we need to create features
     # items needed to test questions
 # PANDAS USAGE
@@ -25,42 +24,37 @@ for row in range(train.shape[0]): # for every row in the data
     question_verbs = {}
     question_words = {}
     question_adjectives = {}
+    hasPNoun = False
     for tag in question_tags: #separate parts of speech
+        if tag[1] == "NNP" or tag[1] == "NNPS":
+            hasPNoun = True
         if tag[1][0] == "N":
-            question_nouns[tag[0]] == tag[0] # all noun types 
+            question_nouns[tag[0]] == tag[0] # all noun types
         elif tag[1][0] == "V":
-            question_verbs[tag[0]] == tag[0] # all verb types 
+            question_verbs[tag[0]] == tag[0] # all verb types
         elif tag[1] != ".":
-            question_words[tag[0]] == tag[0] # all non punctuations types 
+            question_words[tag[0]] == tag[0] # all non punctuations types
         elif tag[1][0] == "J":
             question_adjectives[tag[0]] == tag[0] # all adjectives
     # itquestion_first_word_tagems needed to test questions
 # PANDAS USAGE
+    num_ctwords_match_qwords = 0
+    num_ctnoun_match_qnoun = 0
     context_topic_tokens = nltk.word_tokenize(train.ix[row,2]) # all tokens (words, punc, etc)
     context_topic_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
     context_topic_nouns = {}
     context_topic_words = {}
-    for tag in context_topic_tags: #separate parts of speech
+    for tag in context_topic_tags:  #separate parts of speech
         if tag[1][0] == "N":
-            context_topic_nouns[tag[0]] == tag[0]# all noun types 
-        elif tag[1] != ".":
-            context_topic_words[tag[0]] == tag[0] # all non punctuations types 
-
-    # find number of nouns common between context_topic and question
-    num_ctnoun_match_qnoun = 0    
-    for ctnoun in context_topic_nouns:
-            if question_nouns[ctnoun]:
+            context_topic_nouns[tag[0]] == tag[0]# all noun types
+            if question_nouns[tag[0]]:
                 num_ctnoun_match_qnoun += 1
-                
-    # find number of words common between context_topic and question
-    num_ctwords_match_qwords = 0    
-    for ctword in context_topic_words:
-            if question_words[ctword]:
+        elif tag[1] != ".":
+            context_topic_words[tag[0]] == tag[0] # all non punctuations types
+            if question_words[tag[0]]:
                 num_ctwords_match_qwords += 1
-                
-    # does first word match (Is..will..can..do..does..are..)
 
-# check if question uses proper capitolization 
+# check if question uses proper capitolization
 #    question_correct_capitalization = 0
 #    for i in range(len(question_tokens)):
 #        if question_tokens[i] == ".":
@@ -68,12 +62,8 @@ for row in range(train.shape[0]): # for every row in the data
 #                question_correct_capitalization += 1
 
 # check if question contains a proper noun
-    hasPNoun = False
-    for tag in question_tags:
-        if tag[1] == "NNP" or tag[1] == "NNPS":
-            hasPNoun = True
 
-# create features 
+# create features
     features.append([]) # append a list to features for each row in data
 # PANDAS USAGE
     features[row].append(train.ix[row,1])# # of followers in context topic
