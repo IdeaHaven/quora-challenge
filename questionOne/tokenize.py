@@ -38,27 +38,30 @@ for row in train:
         elif tag[1][0] == "J":
             question_adjectives[tag[0]] = tag[0] # all adjectives
     # itquestion_first_word_tagems needed to test questions
-    context_topic_tokens = nltk.word_tokenize(train[:, 2]) # all tokens (words, punc, etc)
+    num_ctwords_match_qwords = 0
+    num_ctnoun_match_qnoun = 0
+    context_topic_tokens = nltk.word_tokenize(row[2]) # all tokens (words, punc, etc)
     context_topic_tags = nltk.pos_tag(question_tokens) # all tokens and parts of speech in lists
     context_topic_nouns = {}
     context_topic_words = {}
     for tag in context_topic_tags:  #separate parts of speech
         if tag[1][0] == "N":
-            context_topic_nouns.has_key(tag[0])# all noun types
-        elif tag[1] != ".":
-            context_topic_words.has_key(tag[0]) # all non punctuations types
-
-    # find number of nouns common between context_topic and question
-    num_ctnoun_match_qnoun = 0
-    for ctnoun in context_topic_nouns:
-            if question_nouns[ctnoun]:
+            context_topic_nouns[tag[0]] = tag[0]# all noun types
+            if question_nouns.has_key(tag[0]):
                 num_ctnoun_match_qnoun += 1
+        elif tag[1] != ".":
+            context_topic_words[tag[0]] = tag[0] # all non punctuations types
+            if question_words.has_key(tag[0]):
+                num_ctwords_match_qwords += 1
+    # find number of nouns common between context_topic and question
+
+
+
 
     # find number of words common between context_topic and question
-    num_ctwords_match_qwords = 0
-    for ctword in context_topic_words:
-            if question_words[ctword]:
-                num_ctwords_match_qwords += 1
+
+
+
 
     # does first word match (Is..will..can..do..does..are..)
 
