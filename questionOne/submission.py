@@ -1,7 +1,6 @@
 import sys
 import json
 import numpy as np
-import nltk
 from sklearn import metrics, cross_validation, linear_model
 
 s = sys.stdin  # sets a variable that will access the input data
@@ -40,25 +39,32 @@ for train_row_index in range(num_train_lines):  # iterate through the number of 
     # done parsing data
 
     # feature engineering
-    question_tokens = nltk.word_tokenize(row[0]) # all tokens (words, punc, etc)    
-    first_word_lower = question_tokens[0].lower()
+
     # check type of question by looking at first word
-    if first_word_lower == "how" or first_word_lower == "why":
-        start_how_why = 1
-    else:
+    if row[0]:
+        no_question = 0
+        first_word_lower = row[0][:3].lower()
+        if first_word_lower == "how" or first_word_lower == "why":
+            start_how_why = 1
+        else:
+            start_how_why = 0
+        if first_word_lower == "if " or first_word_lower == "can" or first_word_lower == "do " or first_word_lower == "doe" or first_word_lower == "cou" or first_word_lower == "wil" or first_word_lower == "sho":
+            start_if_can_do_does_could_will_should = 1
+        else:
+            start_if_can_do_does_could_will_should = 0
+    else: # if the question has no text
         start_how_why = 0
-    if first_word_lower == "if" or first_word_lower == "can" or first_word_lower == "do" or first_word_lower == "does" or first_word_lower == "could" or first_word_lower == "will" or first_word_lower == "should":
-        start_if_can_do_does_could_will_should = 1
-    else:
         start_if_can_do_does_could_will_should = 0
+        no_question = 1
     
     # create features matrix
     trainfeatures.append([])  # add new empty array to global var
     trainfeatures[train_row_index].append(row[2])  # feature 0: number of context_topic followers
     trainfeatures[train_row_index].append(tr[0])  # feature 1: sum of topics followers
-    trainfeatures[train_row_index].append(start_how_why)  # feature 2: first word is How or Why
-    trainfeatures[train_row_index].append(start_if_can_do_does_could_will_should)  # feature 3: first word is one of: if can do does could will should
-    trainfeatures[train_row_index].append(row[6])  # feature 4: dependent var
+    trainfeatures[train_row_index].append(no_question)  # feature 2: question has no text
+    trainfeatures[train_row_index].append(start_how_why)  # feature 3: first word is How or Why
+    trainfeatures[train_row_index].append(start_if_can_do_does_could_will_should)  # feature 4: first word is one of: if can do does could will should
+    trainfeatures[train_row_index].append(row[6])  # feature 5: dependent var
     ##### if you change the features here you need to replicate this in the test parse section also #####
 
 num_test_lines = int(s.readline())  # pull in next line (number of testing rows)
@@ -94,24 +100,31 @@ for test_row_index in range(num_test_lines):  # iterate through the number of te
     # done parsing data
 
     # feature engineering
-    question_tokens = nltk.word_tokenize(row[0]) # all tokens (words, punc, etc)    
-    first_word_lower = question_tokens[0].lower()
+
     # check type of question by looking at first word
-    if first_word_lower == "how" or first_word_lower == "why":
-        start_how_why = 1
-    else:
+    if row[0]:
+        no_question = 0
+        first_word_lower = row[0][:3].lower()
+        if first_word_lower == "how" or first_word_lower == "why":
+            start_how_why = 1
+        else:
+            start_how_why = 0
+        if first_word_lower == "if " or first_word_lower == "can" or first_word_lower == "do " or first_word_lower == "doe" or first_word_lower == "cou" or first_word_lower == "wil" or first_word_lower == "sho":
+            start_if_can_do_does_could_will_should = 1
+        else:
+            start_if_can_do_does_could_will_should = 0
+    else: # if the question has no text
         start_how_why = 0
-    if first_word_lower == "if" or first_word_lower == "can" or first_word_lower == "do" or first_word_lower == "does" or first_word_lower == "could" or first_word_lower == "will" or first_word_lower == "should":
-        start_if_can_do_does_could_will_should = 1
-    else:
         start_if_can_do_does_could_will_should = 0
+        no_question = 1
     
     # create features matrix
     testfeatures.append([])  # add new empty array to global var
     testfeatures[test_row_index].append(row[2])  # feature 0: number of context_topic followers
     testfeatures[test_row_index].append(tr[0])  # feature 1: sum of topics followers
-    testfeatures[test_row_index].append(start_how_why)  # feature 2: first word is How or Why
-    testfeatures[test_row_index].append(start_if_can_do_does_could_will_should)   # feature 3: first word is one of: if can do does could will should    
+    testfeatures[test_row_index].append(no_question)  # feature 2: question has no text
+    testfeatures[test_row_index].append(start_how_why)  # feature 3: first word is How or Why
+    testfeatures[test_row_index].append(start_if_can_do_does_could_will_should)   # feature 4: first word is one of: if can do does could will should    
     ##### if you change the features here you need to replicate this in the train parse section also #####
 
 
