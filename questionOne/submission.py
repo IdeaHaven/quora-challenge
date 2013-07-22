@@ -1,6 +1,7 @@
 import sys
 import json
 import numpy as np
+import nltk
 from sklearn import metrics, cross_validation, linear_model
 
 s = sys.stdin  # sets a variable that will access the input data
@@ -9,54 +10,75 @@ num_train_lines = int(s.readline())  # pull in first line (number of training ro
 traindata = []
 trainsubs = []
 trainfeatures = []
+#### parse training data, create features
 for train_row_index in range(num_train_lines):  # iterate through the number of training lines
     train_line = json.loads(s.readline())  # json parse the line
     topics = train_line['topics']  # get topics value
+    tr = []
+    tr.append(0)  # tr 0: sum of all the followers of all topics
+    tr.append(len(topics))  # tr 1: number of topics
     if topics:  # if there are topics
-        tr = []
-        tr.append(0)  # tr 0: sum of all the followers of all topics
-        #tr.append(len(topics))  # tr 1: number of topics
         while topics:  # while there are topics remaining
             temp = topics.pop()  # remove topic from topics
-            #tr.append(temp['followers'])  # add the followers for topic
-            #tr.append(temp['name'])  # add the name of topic
+            tr.append(temp['followers'])  # add the followers for topic
+            tr.append(temp['name'])  # add the name of topic
             tr[0] += temp['followers']  # add followers to sum of all topics followers
-        #trainsubs.append(tr)  # add to global var
-        row = []  # make new row to temp store properties
-        row.append(train_line["question_text"])  # row 0: question
-        row.append(train_line["context_topic"])  # row 1: context_topic
-        if train_line["context_topic"]:  # check if this value is null
-            row.append(train_line["context_topic"]["followers"])  # row 2: num ct followers
-            row.append(train_line["context_topic"]["name"])  # row 3: name of ct
-        else:  # append zeros to keep number of columns consistent
-            row.append(0)  # row 2: num ct followers
-            row.append(0)  # row 3: name of ct
-        row.append(train_line["question_key"])  # row 4: question key
-        row.append(train_line["anonymous"])  # row 5: anonymouse
-        row.append(train_line["__ans__"])  # row 6: __ans__ which is dependent var
-    #traindata.append(row)  # add to global var
+    trainsubs.append(tr)  # add to global var
+    row = []  # make new row to temp store properties
+    row.append(train_line["question_text"])  # row 0: question
+    row.append(train_line["context_topic"])  # row 1: context_topic
+    if train_line["context_topic"]:  # check if this value is null
+        row.append(train_line["context_topic"]["followers"])  # row 2: num ct followers
+        row.append(train_line["context_topic"]["name"])  # row 3: name of ct
+    else:  # append zeros to keep number of columns consistent
+        row.append(0)  # row 2: num ct followers
+        row.append(0)  # row 3: name of ct
+    row.append(train_line["question_key"])  # row 4: question key
+    row.append(train_line["anonymous"])  # row 5: anonymouse
+    row.append(train_line["__ans__"])  # row 6: __ans__ which is dependent var
+    traindata.append(row)  # add to global var
+    # done parsing data
+
+    # feature engineering
+    question_tokens = nltk.word_tokenize(row[0]) # all tokens (words, punc, etc)    
+    first_word_lower = question_tokens[0].lower()
+    # check type of question by looking at first word
+    if first_word_lower == "how" or first_word_lower == "why":
+        start_how_why = 1
+    else:
+        start_how_why = 0
+    if first_word_lower == "if" or first_word_lower == "can" or first_word_lower == "do" or first_word_lower == "does" or first_word_lower == "could" or first_word_lower == "will" or first_word_lower == "should":
+        start_if_can_do_does_could_will_should = 1
+    else:
+        start_if_can_do_does_could_will_should = 0
+    
+    # create features matrix
     trainfeatures.append([])  # add new empty array to global var
     trainfeatures[train_row_index].append(row[2])  # feature 0: number of context_topic followers
     trainfeatures[train_row_index].append(tr[0])  # feature 1: sum of topics followers
-    trainfeatures[train_row_index].append(row[6])  # feature 2: dependent var
+    trainfeatures[train_row_index].append(start_how_why)  # feature 2: first word is How or Why
+    trainfeatures[train_row_index].append(start_if_can_do_does_could_will_should)  # feature 3: first word is one of: if can do does could will should
+    trainfeatures[train_row_index].append(row[6])  # feature 4: dependent var
+    ##### if you change the features here you need to replicate this in the test parse section also #####
 
 num_test_lines = int(s.readline())  # pull in next line (number of testing rows)
 testdata = []
 testsubs = []
 testfeatures = []
+#### parse testing data, create features
 for test_row_index in range(num_test_lines):  # iterate through the number of testing lines
     test_line = json.loads(s.readline())  # json parse the line
     topics = test_line['topics']  # get topics value
     tr = []
     tr.append(0)  # tr 0: sum of all the followers of all topics
-    #tr.append(len(topics))   # tr 1: number of topics
+    tr.append(len(topics))   # tr 1: number of topics
     if topics:   # if there are topics
         while topics:   # while there are topics remaining
             temp = topics.pop()  # remove topic from topics
-            #tr.append(temp['followers'])  # add the followers for topic
-            #tr.append(temp['name'])  # add the name of topic
+            tr.append(temp['followers'])  # add the followers for topic
+            tr.append(temp['name'])  # add the name of topic
             tr[0] += temp['followers']  # add followers to sum of all topics followers
-        #testsubs.append(tr)  # add to global var
+        testsubs.append(tr)  # add to global var
     row = []  # make new row to temp store properties
     row.append(test_line["question_text"])  # row 0: question
     row.append(test_line["context_topic"])  # row 1: context_topic
@@ -68,11 +90,30 @@ for test_row_index in range(num_test_lines):  # iterate through the number of te
         row.append(0)  # row 3: name of ct
     row.append(test_line["question_key"])  # row 4: question key
     row.append(test_line["anonymous"])  # row 5: anonymouse
-
     testdata.append(row)  # add to global var
+    # done parsing data
+
+    # feature engineering
+    question_tokens = nltk.word_tokenize(row[0]) # all tokens (words, punc, etc)    
+    first_word_lower = question_tokens[0].lower()
+    # check type of question by looking at first word
+    if first_word_lower == "how" or first_word_lower == "why":
+        start_how_why = 1
+    else:
+        start_how_why = 0
+    if first_word_lower == "if" or first_word_lower == "can" or first_word_lower == "do" or first_word_lower == "does" or first_word_lower == "could" or first_word_lower == "will" or first_word_lower == "should":
+        start_if_can_do_does_could_will_should = 1
+    else:
+        start_if_can_do_does_could_will_should = 0
+    
+    # create features matrix
     testfeatures.append([])  # add new empty array to global var
     testfeatures[test_row_index].append(row[2])  # feature 0: number of context_topic followers
     testfeatures[test_row_index].append(tr[0])  # feature 1: sum of topics followers
+    testfeatures[test_row_index].append(start_how_why)  # feature 2: first word is How or Why
+    testfeatures[test_row_index].append(start_if_can_do_does_could_will_should)   # feature 3: first word is one of: if can do does could will should    
+    ##### if you change the features here you need to replicate this in the train parse section also #####
+
 
 ### train the model here
 # set constants
