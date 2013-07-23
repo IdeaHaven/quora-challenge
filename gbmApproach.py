@@ -1,9 +1,7 @@
 # import os
 import csv as csv
 import numpy as np
-import random
-import math
-from sklearn.metrics import mean_squared_error,r2_score
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import GradientBoostingRegressor
 import matplotlib.pyplot as plt
 
